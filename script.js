@@ -29,12 +29,38 @@ document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
 
 const form=document.getElementById("leadForm");
 const msg=document.getElementById("formMsg");
-form.addEventListener("submit",e=>{
-  e.preventDefault();
-  msg.textContent="Inscrição de teste validada. Nesta versão os dados não foram armazenados.";
-  msg.classList.add("show");
-  form.reset();
-});
+const FORM_ENDPOINT="https://script.google.com/macros/s/AKfycbwBhn1j1mkZDnh3FUwhXEVJmGC3aPUKJ4lv7O6f-GQ1Ku9cJDO1SKhYRcyvx3ruOkBg/exec";
+
+if(form){
+  form.addEventListener("submit",async e=>{
+    e.preventDefault();
+
+    const btn=form.querySelector('button[type="submit"]');
+    const originalText=btn?btn.textContent:"";
+    const data={
+      nome:document.getElementById("nome")?.value.trim()||"",
+      email:document.getElementById("email")?.value.trim()||"",
+      telefone:document.getElementById("telefone")?.value.trim()||"",
+      empresa:document.getElementById("empresa")?.value.trim()||"",
+      interesse:document.getElementById("interesse")?.value||"",
+      origem:window.location.href
+    };
+
+    if(btn){btn.disabled=true;btn.textContent="Enviando inscrição...";}
+    if(msg){msg.textContent="";msg.classList.remove("show","error");}
+
+    try{
+      await fetch(FORM_ENDPOINT,{method:"POST",mode:"no-cors",body:JSON.stringify(data)});
+      if(msg){msg.textContent="Inscrição realizada com sucesso. Em breve entraremos em contato.";msg.classList.add("show");}
+      form.reset();
+    }catch(err){
+      if(msg){msg.textContent="Não foi possível enviar agora. Tente novamente em instantes.";msg.classList.add("show","error");}
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=originalText;}
+    }
+  });
+}
+
 
 const scrollProgress=document.getElementById("scrollProgress");
 const cursorGlow=document.getElementById("cursorGlow");
