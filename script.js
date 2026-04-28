@@ -61,7 +61,6 @@ if(form){
   });
 }
 
-
 const scrollProgress=document.getElementById("scrollProgress");
 const cursorGlow=document.getElementById("cursorGlow");
 window.addEventListener("scroll",()=>{
